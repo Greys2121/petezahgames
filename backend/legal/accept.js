@@ -1,13 +1,16 @@
 import { hasValidGate } from '../cap/store.js';
 import { hasValidLegal, setLegalCookie } from './cookie.js';
 import { LEGAL_VERSION } from './version.js';
+import { needsCaptchaChallenge } from '../middleware/challenge-risk.js';
 
 export function legalStatusHandler(req, res) {
+  const needsCaptcha = needsCaptchaChallenge(req) && !hasValidGate(req);
   res.json({
     version: LEGAL_VERSION,
     gate: hasValidGate(req),
     accepted: hasValidLegal(req),
-    needsReagree: hasValidGate(req) && !hasValidLegal(req),
+    needsCaptcha,
+    needsReagree: !hasValidLegal(req),
   });
 }
 
@@ -22,8 +25,11 @@ export function legalAcceptHandler(req, res) {
     return res.status(400).json({ error: 'Legal documents were updated. Refresh the page and accept the latest version.' });
   }
 
-  if (!hasValidGate(req)) {
-    return res.status(403).json({ error: 'Complete verification first.' });
+  if (needsCaptchaChallenge(req) && !hasValidGate(req)) {
+    return res.status(403).json({
+      error: 'Complete verification first.',
+      code: 'CAPTCHA_REQUIRED',
+    });
   }
 
   const legal = setLegalCookie(res, req);

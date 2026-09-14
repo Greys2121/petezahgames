@@ -391,14 +391,14 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
                 <div class="brand-row">
                     <img src="/storage/images/logo-png-removebg-preview.png" alt="PeteZah" class="logo">
                     <div class="brand-meta">
-                        <div class="kicker">Voltedge proxy</div>
-                        <div class="hint">Site failed to load through the proxy tunnel</div>
+                        <div class="kicker">Session bridge</div>
+                        <div class="hint">Site failed to load through the stream path</div>
                     </div>
-                    <div class="badge"><i class="fas fa-satellite-dish"></i> Proxy link failed</div>
+                    <div class="badge"><i class="fas fa-satellite-dish"></i> Stream path failed</div>
                 </div>
                 <div>
                     <h1 id="errorTitle">Connection Error</h1>
-                    <p class="error-subtitle" style="margin-top:8px">We couldn't load <span id="fetchedURL"></span> through Voltedge.</p>
+                    <p class="error-subtitle" style="margin-top:8px">We couldn't load <span id="fetchedURL"></span> through the edge.</p>
                 </div>
                 <div id="info">
                     <div id="errorTrace-wrapper">
@@ -410,17 +410,17 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
             <div class="right">
                 <div class="card">
                     <h3><i class="fas fa-desktop" style="color: var(--ok)"></i> Try the VM</h3>
-                    <p>Some sites break under the proxy. Open the Firefox VM for a fuller browser stack.</p>
+                    <p>Some sites break under remapping. Open the Firefox VM for a fuller browser stack.</p>
                     <button type="button" class="linkish" id="tryVm"><i class="fas fa-arrow-right"></i> Launch VM</button>
                 </div>
                 <div class="card">
                     <h3><i class="fab fa-discord" style="color: var(--accent)"></i> Report on Discord</h3>
-                    <p>Tell us the site and what you saw so we can improve proxy coverage.</p>
+                    <p>Tell us the site and what you saw so we can improve path coverage.</p>
                     <a href="https://discord.gg/cYjHFDguxS" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt"></i> Join Discord</a>
                 </div>
                 <div class="card">
                     <h3><i class="fas fa-comment-dots" style="color: var(--accent)"></i> Send feedback</h3>
-                    <p>In-app feedback helps us track recurring Voltedge failures.</p>
+                    <p>In-app feedback helps us track recurring edge path failures.</p>
                     <button type="button" class="linkish" id="tryFeedback"><i class="fas fa-arrow-right"></i> Open feedback</button>
                 </div>
                 <div class="actions">
@@ -434,7 +434,7 @@ ${l}`}}if((0,n.U5)("rewriterLogs",r.base))for(let e of s.errors)console.error("o
     </div>
     </div>
     <div id="version-wrapper">
-        <i class="fas fa-microchip"></i> Voltedge v<span id="version"></span> · <span id="build"></span>
+        <i class="fas fa-microchip"></i> Edge path v<span id="version"></span> · <span id="build"></span>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="/vendor/vanta.fog.min.js"></script>

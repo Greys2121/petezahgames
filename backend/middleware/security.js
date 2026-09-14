@@ -129,6 +129,11 @@ export function createFingerprint(req) {
   return createHash('sha256').update(data).digest('hex').slice(0, 32);
 }
 
+export function getIPReputationScore(ip) {
+  const current = ipReputation.get(ip);
+  return current ? current.score : 0;
+}
+
 export function updateIPReputation(ip, score) {
   const current = ipReputation.get(ip) || { score: 0, lastSeen: 0, violations: [] };
   current.score += score;
@@ -138,7 +143,7 @@ export function updateIPReputation(ip, score) {
     if (current.violations.length > 50) current.violations.shift();
   }
   ipReputation.set(ip, current);
-  if (current.score < -100) {
+  if (current.score < -250) {
     circuitBreakers.set(ip, { open: true, until: Date.now() + 3600000, violations: current.violations.length });
   }
 }
@@ -279,7 +284,7 @@ export function adjustPowDifficulty(shield) {
   else if (target < systemState.currentPowDifficulty) systemState.currentPowDifficulty = Math.max(systemState.currentPowDifficulty - 1, BASE_POW_DIFFICULTY);
 }
 
-const BOT_PATTERNS = [/googlebot/i, /bingbot/i, /slurp/i, /duckduckbot/i, /baiduspider/i, /yandexbot/i, /facebookexternalhit/i, /facebot/i, /meta-externalagent/i, /meta-externalfetcher/i, /twitterbot/i, /discordbot/i, /telegrambot/i, /whatsapp/i, /linkedinbot/i, /slackbot/i, /archive\.org_bot/i, /ia_archiver/i, /semrushbot/i, /ahrefsbot/i, /mj12bot/i, /dotbot/i];
+const BOT_PATTERNS = [/googlebot/i, /bingbot/i, /slurp/i, /duckduckbot/i, /baiduspider/i, /yandexbot/i, /facebookexternalhit/i, /facebot/i, /meta-externalagent/i, /meta-externalfetcher/i, /twitterbot/i, /discordbot/i, /telegrambot/i, /whatsapp/i, /linkedinbot/i, /slackbot/i, /archive\.org_bot/i, /ia_archiver/i, /semrushbot/i, /ahrefsbot/i, /mj12bot/i, /dotbot/i, /bytespider/i, /petalbot/i, /gptbot/i, /claudebot/i, /ccbot/i, /anthropic-ai/i, /dataforseo/i, /serpstat/i, /screaming frog/i, /nutch/i, /seokicks/i];
 
 const OPEN_PATHS = new Set(['/api/signin', '/api/signup', '/api/bot-challenge', '/api/bot-verify', '/api/verify-email', '/api/verify-email/resend', '/api/legal/accept', '/api/legal/status', '/api/me', '/api/signout', '/api/comments', '/api/likes', '/api/changelog', '/api/presence', '/api/announcements/active', '/api/games/play', '/api/games/plays', '/api/games/catalog', '/api/websocket/normal', '/api/websocket/normal/', '/api/websocket/tor', '/api/websocket/tor/']);
 

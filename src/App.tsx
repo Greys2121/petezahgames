@@ -9,6 +9,7 @@ import ProfilePage from "./components/ProfilePage";
 import SharedAiPage from "./components/SharedAiPage";
 import SvgAccessGate from "./components/SvgAccessGate";
 import LegalReagreeModal from "./components/LegalReagreeModal";
+import ActivityCaptchaModal from "./components/ActivityCaptchaModal";
 import { isSvgShell } from "./lib/siteOrigin";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
       <Router>
         <SvgAccessGate>
           <LegalReagreeModal />
+          <ActivityCaptchaModal />
           <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/user/:username" element={<PublicProfileRoute />} />

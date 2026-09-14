@@ -71,6 +71,17 @@ assertLen(MUX_JS);
 assertLen(STREAM_JS);
 assertLen(CURL_JS);
 
+const DISPLAY_JS = [
+  ['Voltedge proxy', 'Session bridge'],
+  ['Site failed to load through the proxy tunnel', 'Site failed to load through the stream path'],
+  ['Proxy link failed', 'Stream path failed'],
+  ['through Voltedge.', 'through the edge.'],
+  ['under the proxy.', 'under remapping.'],
+  ['improve proxy coverage.', 'improve path coverage.'],
+  ['recurring Voltedge failures.', 'recurring edge path failures.'],
+  ['Voltedge v<span', 'Edge path v<span'],
+];
+
 const ENGINE_WASM = [
   ['scramjet', 'voltedge'],
   ['duskline', 'voltedge'],
@@ -145,6 +156,9 @@ function cloakFile(file, jsPairs, wasmPairs) {
     const before = readFileSync(file, 'utf8');
     let after = cloakEmbedded(before, wasmPairs);
     after = applyPairs(after, jsPairs);
+    if (jsPairs === ENGINE_JS || (Array.isArray(jsPairs) && jsPairs.some((p) => p[0] === 'scramjet'))) {
+      after = applyPairs(after, DISPLAY_JS);
+    }
     after = after.replace(/\/\/[#@]\s*sourceMappingURL=.*$/gm, '');
     if (after !== before) writeFileSync(file, after);
     return 'js';

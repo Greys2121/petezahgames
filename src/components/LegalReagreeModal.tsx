@@ -15,7 +15,7 @@ export default function LegalReagreeModal() {
         const d = await r.json();
         if (gone) return;
         setVersion(d.version || null);
-        if (d.gate && !d.accepted) setOpen(true);
+        if (!d.accepted) setOpen(true);
       } catch {}
     })();
     return () => {
@@ -26,7 +26,11 @@ export default function LegalReagreeModal() {
   if (!open) return null;
 
   async function accept() {
-    if (busy || !agreed) return;
+    if (busy) return;
+    if (!agreed) {
+      setError("Please check the box to continue.");
+      return;
+    }
     setBusy(true);
     setError("");
     try {
@@ -145,12 +149,13 @@ export default function LegalReagreeModal() {
           height: 0;
         }
         .pz-legal-reagree .tick {
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           margin-top: 1px;
           flex-shrink: 0;
           border-radius: 5px;
-          border: 1px solid hsl(213 40% 34%);
+          border: 2px solid hsl(213 70% 62%);
+          box-shadow: 0 0 0 1px hsl(213 40% 20% / 0.8);
           background: hsl(216 30% 10%);
           display: flex;
           align-items: center;
@@ -167,7 +172,8 @@ export default function LegalReagreeModal() {
         }
         .pz-legal-reagree .agree input:checked + .tick {
           background: hsl(213 55% 32%);
-          border-color: hsl(213 45% 42%);
+          border-color: hsl(213 75% 68%);
+          box-shadow: 0 0 0 1px hsl(213 55% 40% / 0.5);
         }
         .pz-legal-reagree .agree input:checked + .tick svg {
           opacity: 1;
@@ -212,8 +218,12 @@ export default function LegalReagreeModal() {
           transition: opacity 0.15s, filter 0.15s;
         }
         .pz-legal-reagree .continue:disabled {
-          opacity: 0.45;
+          opacity: 0.55;
           cursor: not-allowed;
+        }
+        .pz-legal-reagree .continue.is-waiting {
+          opacity: 0.85;
+          cursor: pointer;
         }
         .pz-legal-reagree .continue:not(:disabled):hover {
           filter: brightness(1.08);
@@ -228,11 +238,18 @@ export default function LegalReagreeModal() {
         <p className="eyebrow">Policy update</p>
         <h2 id="pz-legal-reagree-title">Our policies changed</h2>
         <p className="sub">
-          You&apos;re still verified — no captcha needed. Please review and re-agree to continue.
+          You&apos;re in — please review and agree to continue.
           {version ? <span className="version">Document version {version}</span> : null}
         </p>
         <label className="agree">
-          <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => {
+              setAgreed(e.target.checked);
+              if (e.target.checked) setError("");
+            }}
+          />
           <span className="tick" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="20 6 9 17 4 12" />
@@ -255,7 +272,12 @@ export default function LegalReagreeModal() {
           </span>
         </label>
         {error ? <p className="error">{error}</p> : null}
-        <button type="button" className="continue" disabled={!agreed || busy} onClick={() => void accept()}>
+        <button
+          type="button"
+          className={`continue${!agreed && !busy ? " is-waiting" : ""}`}
+          disabled={busy}
+          onClick={() => void accept()}
+        >
           {busy ? "Saving…" : "Agree and continue"}
         </button>
       </div>
