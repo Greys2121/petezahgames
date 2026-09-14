@@ -431,7 +431,7 @@ export default function ArcBrowser() {
         </main>
       </div>
       <DiscordPopup />
-      <GlobalAnnouncement />
+      <GlobalAnnouncement onNavigate={state.navigateToUrl} />
       <InspectOverlay
         open={inspectOpen}
         onClose={() => setInspectOpen(false)}
