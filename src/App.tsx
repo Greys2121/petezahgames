@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +11,6 @@ import SvgAccessGate from "./components/SvgAccessGate";
 import LegalReagreeModal from "./components/LegalReagreeModal";
 import ActivityCaptchaModal from "./components/ActivityCaptchaModal";
 import { isSvgShell } from "./lib/siteOrigin";
-import { isQuietBoot, whenQuietEnds } from "./lib/quietBoot";
 
 const queryClient = new QueryClient();
 const Router = isSvgShell() ? HashRouter : BrowserRouter;
@@ -22,12 +20,6 @@ function PublicProfileRoute() {
   return <ProfilePage username={username || ""} />;
 }
 
-function QuietShell({ children }: { children: React.ReactNode }) {
-  const [, bump] = useState(0);
-  useEffect(() => whenQuietEnds(() => bump((n) => n + 1)), []);
-  return <>{children}</>;
-}
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -35,16 +27,14 @@ const App = () => (
       <Sonner />
       <Router>
         <SvgAccessGate>
-          <QuietShell>
-            {!isQuietBoot() ? <LegalReagreeModal /> : null}
-            {!isQuietBoot() ? <ActivityCaptchaModal /> : null}
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/user/:username" element={<PublicProfileRoute />} />
-              <Route path="/share/ai/:token" element={<SharedAiPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </QuietShell>
+          <LegalReagreeModal />
+          <ActivityCaptchaModal />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/user/:username" element={<PublicProfileRoute />} />
+            <Route path="/share/ai/:token" element={<SharedAiPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </SvgAccessGate>
       </Router>
     </TooltipProvider>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, MessageCircle, Youtube } from "lucide-react";
-import { whenQuietEnds } from "@/lib/quietBoot";
 
 const LAST_KEY = "petezah-discord-popup-last";
 const SEEN_KEY = "petezah-socials-first-seen";
@@ -14,45 +13,43 @@ export default function DiscordPopup() {
 
   useEffect(() => {
     let timer: number | undefined;
-    const off = whenQuietEnds(() => {
-      let firstSeen = false;
-      try {
-        firstSeen = localStorage.getItem(SEEN_KEY) === "1";
-        if (!firstSeen) {
-          const legacy = Number(localStorage.getItem("petezah-socials-visits") || "0") || 0;
-          if (legacy >= 1) {
-            firstSeen = true;
-            localStorage.setItem(SEEN_KEY, "1");
-          }
-        }
-      } catch {
-        firstSeen = false;
-      }
-
+    let firstSeen = false;
+    try {
+      firstSeen = localStorage.getItem(SEEN_KEY) === "1";
       if (!firstSeen) {
-        try {
+        const legacy = Number(localStorage.getItem("petezah-socials-visits") || "0") || 0;
+        if (legacy >= 1) {
+          firstSeen = true;
           localStorage.setItem(SEEN_KEY, "1");
-        } catch {}
-        return;
+        }
       }
+    } catch {
+      firstSeen = false;
+    }
 
-      let last = 0;
+    if (!firstSeen) {
       try {
-        last = Number(localStorage.getItem(LAST_KEY) || "0") || 0;
-      } catch {
-        last = 0;
-      }
-      if (Date.now() - last < COOLDOWN_MS) return;
+        localStorage.setItem(SEEN_KEY, "1");
+      } catch {}
+      return;
+    }
 
-      timer = window.setTimeout(() => {
-        setShow(true);
-        try {
-          localStorage.setItem(LAST_KEY, String(Date.now()));
-        } catch {}
-      }, 900);
-    });
+    let last = 0;
+    try {
+      last = Number(localStorage.getItem(LAST_KEY) || "0") || 0;
+    } catch {
+      last = 0;
+    }
+    if (Date.now() - last < COOLDOWN_MS) return;
+
+    timer = window.setTimeout(() => {
+      setShow(true);
+      try {
+        localStorage.setItem(LAST_KEY, String(Date.now()));
+      } catch {}
+    }, 2500);
+
     return () => {
-      off();
       if (timer) window.clearTimeout(timer);
     };
   }, []);

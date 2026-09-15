@@ -25,13 +25,6 @@ export function legalAcceptHandler(req, res) {
     return res.status(400).json({ error: 'Legal documents were updated. Refresh the page and accept the latest version.' });
   }
 
-  if (needsCaptchaChallenge(req) && !hasValidGate(req)) {
-    return res.status(403).json({
-      error: 'Complete verification first.',
-      code: 'CAPTCHA_REQUIRED',
-    });
-  }
-
   const legal = setLegalCookie(res, req);
   return res.json({ ok: true, version: LEGAL_VERSION, legal });
 }

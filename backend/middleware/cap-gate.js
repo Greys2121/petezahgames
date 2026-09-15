@@ -54,6 +54,7 @@ const OPEN_EXACT = new Set([
   '/api/websocket/normal/',
   '/api/websocket/tor',
   '/api/websocket/tor/',
+  '/api/announcements/active',
 ]);
 
 const OPEN_PREFIX = ['/cap/', '/api/verify-email', '/api/legal', '/api/study/', '/api/flashcards/', '/api/quiz/', '/vendor/', '/fonts/', '/fx/', '/storage/ag/', '/b/', '/f/__rivet__/'];
@@ -63,6 +64,7 @@ function isOpenPath(p) {
   if (p === '/storage/ag' || p.startsWith('/storage/ag/')) return true;
   if (p === '/api/websocket/normal' || p.startsWith('/api/websocket/normal/')) return true;
   if (p === '/api/websocket/tor' || p.startsWith('/api/websocket/tor/')) return true;
+  if (p === '/api/announcements/active') return true;
   for (const pre of OPEN_PREFIX) {
     if (p === pre.slice(0, -1) || p.startsWith(pre)) return true;
   }

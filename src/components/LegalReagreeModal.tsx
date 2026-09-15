@@ -42,6 +42,11 @@ export default function LegalReagreeModal() {
       });
       const d = await r.json().catch(() => ({}));
       if (!r.ok) {
+        if (d?.code === "CAPTCHA_REQUIRED" || /verif/i.test(String(d?.error || ""))) {
+          try {
+            window.__pzNeedCaptcha?.();
+          } catch {}
+        }
         setError(d.error || "Could not save. Try again.");
         setBusy(false);
         return;
