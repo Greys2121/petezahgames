@@ -29,6 +29,8 @@ const EXCLUDE =
 let maps = null;
 let reverse = null;
 let ready = false;
+let moPending = false;
+let moTimer = null;
 
 function shouldObfuscateText(text) {
   if (!text || !text.trim()) return false;
@@ -73,7 +75,7 @@ function excluded(el) {
 
 function mark(el) {
   if (!el || excluded(el)) return;
-  el.classList.add("ob-p");
+  el.classList.add("t-ui");
   try {
     el.style.setProperty("font-family", "plusjakartasans-obf, sans-serif", "important");
     el.style.setProperty("font-synthesis", "none", "important");
@@ -120,7 +122,7 @@ function processElement(root) {
     const nodes = [];
     let n;
     while ((n = walker.nextNode())) nodes.push(n);
-    nodes.forEach(processTextNode);
+    for (let i = 0; i < nodes.length; i++) processTextNode(nodes[i]);
   }
 
   ["placeholder", "alt"].forEach((attr) => {
@@ -139,7 +141,20 @@ function processElement(root) {
 function sweep() {
   if (!ready || !document.body) return;
   processElement(document.body);
-  document.body.classList.add("font-obfuscation-ready");
+}
+
+function scheduleSweep() {
+  if (moPending) return;
+  moPending = true;
+  const run = () => {
+    moPending = false;
+    sweep();
+  };
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(run, { timeout: 900 });
+  } else {
+    moTimer = setTimeout(run, 180);
+  }
 }
 
 function setupClipboard() {
@@ -179,24 +194,15 @@ async function boot() {
   }
 
   setupClipboard();
-  sweep();
-  setTimeout(sweep, 250);
-  setTimeout(sweep, 1000);
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(() => sweep(), { timeout: 400 });
+  } else {
+    setTimeout(sweep, 40);
+  }
+  setTimeout(scheduleSweep, 400);
 
-  if (typeof MutationObserver !== "undefined") {
-    const mo = new MutationObserver((muts) => {
-      for (const mut of muts) {
-        if (mut.type === "characterData" && mut.target?.parentElement) {
-          const p = mut.target.parentElement;
-          if (p.tagName === "TITLE" || p.closest?.("head")) continue;
-          processTextNode(mut.target);
-        }
-        mut.addedNodes?.forEach((node) => {
-          if (node.nodeType === 1 && (node.tagName === "TITLE" || node.closest?.("head"))) return;
-          if (node.nodeType === 1 || node.nodeType === 3) processElement(node);
-        });
-      }
-    });
+  if (typeof MutationObserver !== "undefined" && document.body) {
+    const mo = new MutationObserver(() => scheduleSweep());
     mo.observe(document.body, {
       childList: true,
       subtree: true,

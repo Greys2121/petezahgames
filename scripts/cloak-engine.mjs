@@ -80,6 +80,8 @@ const DISPLAY_JS = [
   ['improve proxy coverage.', 'improve path coverage.'],
   ['recurring Voltedge failures.', 'recurring edge path failures.'],
   ['Voltedge v<span', 'Edge path v<span'],
+  ['pz-voltedge-error', 'pz-session-bridge'],
+  ['voltedge-attr-', 'kept-src-attr-'],
 ];
 
 const ENGINE_WASM = [

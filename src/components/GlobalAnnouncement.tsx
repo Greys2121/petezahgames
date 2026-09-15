@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Megaphone } from "lucide-react";
 import { MentionsText } from "@/lib/mentions";
+import { whenQuietEnds } from "@/lib/quietBoot";
 
 const SEEN_KEY = "pz-announcement-seen-ids";
 const LEGACY_SEEN_KEY = "pz-announcement-seen";
@@ -48,22 +49,26 @@ export default function GlobalAnnouncement({
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/announcements/active", { credentials: "include" })
-      .then((r) => r.json())
-      .then((d) => {
-        if (cancelled) return;
-        const list: Announcement[] = Array.isArray(d.announcements)
-          ? d.announcements
-          : d.announcement
-            ? [d.announcement]
-            : [];
-        const seen = readSeen();
-        const pending = list.filter((a) => a?.id && !seen.has(a.id));
-        if (pending.length) setQueue(pending);
-      })
-      .catch(() => {});
+    const run = () => {
+      fetch("/api/announcements/active", { credentials: "include" })
+        .then((r) => r.json())
+        .then((d) => {
+          if (cancelled) return;
+          const list: Announcement[] = Array.isArray(d.announcements)
+            ? d.announcements
+            : d.announcement
+              ? [d.announcement]
+              : [];
+          const seen = readSeen();
+          const pending = list.filter((a) => a?.id && !seen.has(a.id));
+          if (pending.length) setQueue(pending);
+        })
+        .catch(() => {});
+    };
+    const off = whenQuietEnds(run);
     return () => {
       cancelled = true;
+      off();
     };
   }, []);
 
