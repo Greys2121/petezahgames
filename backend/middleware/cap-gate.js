@@ -50,6 +50,10 @@ const OPEN_EXACT = new Set([
   '/dmca',
   '/copyright',
   '/4f66ddd48bf4ee436b4ca095a86f40ff.html',
+  '/api/websocket/normal',
+  '/api/websocket/normal/',
+  '/api/websocket/tor',
+  '/api/websocket/tor/',
 ]);
 
 const OPEN_PREFIX = ['/cap/', '/api/verify-email', '/api/legal', '/api/study/', '/api/flashcards/', '/api/quiz/', '/vendor/', '/fonts/', '/fx/', '/storage/ag/', '/b/', '/f/__rivet__/'];
@@ -57,6 +61,8 @@ const OPEN_PREFIX = ['/cap/', '/api/verify-email', '/api/legal', '/api/study/', 
 function isOpenPath(p) {
   if (OPEN_EXACT.has(p)) return true;
   if (p === '/storage/ag' || p.startsWith('/storage/ag/')) return true;
+  if (p === '/api/websocket/normal' || p.startsWith('/api/websocket/normal/')) return true;
+  if (p === '/api/websocket/tor' || p.startsWith('/api/websocket/tor/')) return true;
   for (const pre of OPEN_PREFIX) {
     if (p === pre.slice(0, -1) || p.startsWith(pre)) return true;
   }

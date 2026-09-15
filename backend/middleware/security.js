@@ -307,6 +307,12 @@ export function createGateMiddleware(shield) {
     systemState.totalRequests++;
     const ip = toIPv4(null, req);
     const ua = req.headers['user-agent'] || '';
+    const pathOnly = String(req.url || req.originalUrl || '').split('?')[0];
+    const isWsAuth =
+      pathOnly === '/api/websocket/normal' ||
+      pathOnly === '/api/websocket/normal/' ||
+      pathOnly === '/api/websocket/tor' ||
+      pathOnly === '/api/websocket/tor/';
 
     if (shield?.isKillSwitchActive?.() && !isKillSwitchExempt(req)) {
       shield.incrementBlocked(ip, 'kill_switch');
@@ -318,13 +324,13 @@ export function createGateMiddleware(shield) {
       return res.status(429).json({ error: 'Too many requests' });
     }
 
+    if (isWsAuth) return next();
+
     const botMatch = BOT_PATTERNS.find(p => p.test(ua));
     if (botMatch) {
-      // Share-preview crawlers often fail reverse-DNS; still let them read OG tags.
       if (isSocialPreviewBot(ua)) return next();
       const verified = await verifyLegitimateBot(ua, ip);
       if (!verified) { shield.incrementBlocked(ip, 'fake_bot'); return res.status(403).json({ error: 'Forbidden' }); }
-      // Mark so cap-gate can skip the /verify wall for real crawlers.
       req.pzVerifiedBot = true;
       return next();
     }
@@ -347,6 +353,8 @@ export function isKillSwitchExempt(req) {
   if (pathOnly === '/api/me') return true;
   if (pathOnly === '/api/signout' || pathOnly === '/api/signin') return true;
   if (pathOnly.startsWith('/api/auth/2fa')) return true;
+  if (pathOnly === '/api/websocket/normal' || pathOnly === '/api/websocket/normal/') return true;
+  if (pathOnly === '/api/websocket/tor' || pathOnly === '/api/websocket/tor/') return true;
   if (pathOnly === '/' || pathOnly === '/index.html') return true;
   if (pathOnly.startsWith('/assets/')) return true;
   if (pathOnly.startsWith('/vendor/')) return true;

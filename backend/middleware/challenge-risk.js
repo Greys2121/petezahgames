@@ -127,14 +127,30 @@ export function isDatacenterIp(ip) {
 const AUTOMATION_UA =
   /headless|phantomjs|selenium|webdriver|puppeteer|playwright|scrapy|httpclient|python-requests|go-http-client|java\/|libwww|wget\/|curl\/|axios\/|node-fetch|okhttp|postman|insomnia|httpie|aiohttp|mechanize|python-urllib|libcurl|curl-adapter|restsharp|http.rb|faraday|dispatch\/|undici|got\b|superagent|needle\/|request\/|python-httpx|aiohttp|cloudscraper|scrapy|crawl|spider|bot\b|slurp|fetcher|monitor|scan/i;
 
+function isWebsocketAuthPath(req) {
+  const p = String(req.path || req.url || '').split('?')[0];
+  return (
+    p === '/api/websocket/normal' ||
+    p === '/api/websocket/normal/' ||
+    p === '/api/websocket/tor' ||
+    p === '/api/websocket/tor/' ||
+    p === '/websocket/normal' ||
+    p === '/websocket/normal/' ||
+    p === '/websocket/tor' ||
+    p === '/websocket/tor/'
+  );
+}
+
 export function isUnusualBrowser(req) {
   const ua = String(req.headers['user-agent'] || '');
   if (!ua || ua.length < 12 || ua.length > 512) return true;
   if (isSocialPreviewBot(ua) || isSearchEngineBot(ua)) return false;
   if (AUTOMATION_UA.test(ua)) return true;
   if (/^[A-Z][a-z]+\/[\d.]+$/i.test(ua) && !/Mozilla|Chrome|Safari|Firefox|Edg|OPR|CriOS|FxiOS/i.test(ua)) return true;
-  const isWs = String(req.headers.upgrade || '').toLowerCase() === 'websocket';
-  if (isWs) return false;
+  if (String(req.headers.upgrade || '').toLowerCase() === 'websocket') return false;
+  if (req.headers['sec-websocket-key']) return false;
+  if (req.headers['x-original-uri']) return false;
+  if (isWebsocketAuthPath(req)) return false;
   const al = req.headers['accept-language'];
   if (!al || (typeof al === 'string' && al.trim().length < 2)) return true;
   const accept = String(req.headers.accept || '');
