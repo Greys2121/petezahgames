@@ -4598,8 +4598,10 @@ export default function AccountPage({ onNavigate }: { onNavigate: (url: string) 
                     ["Mercury Workshop", "Page rewrite engine"],
                     ["Waves Proxy / Mochi", "Proxy transport & networking"],
                     ["Puter", "Firefox WASM virtual machine"],
-                    ["Selenite", "Large games catalog contributions"],
-                    ["CrazyGames & partners", "Embedded / catalog game providers"],
+                    ["Selenite", "HTML5 catalog contributions (third-party / community)"],
+                    ["CrazyGames & partners", "Embedded catalog providers"],
+                    ["SoundCloud / YouTube", "Official music embed & API surfaces"],
+                    ["TMDB", "Movie/TV metadata (not video hosting)"],
                     ["Lucide", "Icon system"],
                     ["Vanta / Three.js", "Atmospheric backgrounds"],
                   ].map(([title, desc]) => (
