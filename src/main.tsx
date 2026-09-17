@@ -13,9 +13,12 @@ import { syncBgEffectAttr } from "./lib/bgEffects";
 import { ensureBuiltinExtensions } from "./components/ExtensionsPage";
 import { installQuietBoot, whenQuietEnds } from "./lib/quietBoot";
 import { installTraceSeal } from "./lib/traceSeal";
+import { installLessonMetrics, trackSection } from "./lib/lessonMetrics";
 import "./styles/rivet.css";
 
 installQuietBoot();
+installLessonMetrics();
+trackSection("home", { page_title: "Campus Home" });
 whenQuietEnds(() => {
   installTraceSeal();
 });
@@ -51,17 +54,6 @@ whenQuietEnds(() => {
     }
     document.head.appendChild(s);
   };
-  try {
-    (window as any).dataLayer = (window as any).dataLayer || [];
-    const gtag = function (...args: any[]) {
-      (window as any).dataLayer.push(args);
-    };
-    (window as any).gtag = (window as any).gtag || gtag;
-    gtag("js", new Date());
-    gtag("config", "G-SHE360M0YP");
-  } catch {}
-  inject("https://www.googletagmanager.com/gtm.js?id=GTM-WPH7NCG4");
-  inject("https://www.googletagmanager.com/gtag/js?id=G-SHE360M0YP");
   inject("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6640595376330309", {
     crossorigin: "anonymous",
   });
